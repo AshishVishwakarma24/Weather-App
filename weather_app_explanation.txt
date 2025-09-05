@@ -1,0 +1,105 @@
+
+Weather App Project - Explanation Guide
+=======================================
+
+This guide explains how the backend (Python/Flask) and frontend (HTML/CSS/Bootstrap) work together
+to create the Weather App. Everything is broken down step by step in simple terms.
+
+---------------------------------------------------
+1. Backend (Python + Flask)
+---------------------------------------------------
+
+Files: weather.py, app.py
+
+- weather.py
+  * get_lat_lon(city, state, country, api_key)
+      -> Uses OpenWeatherMap Geocoding API to get latitude & longitude for a given city.
+  * get_current_weather(lat, lon, api_key, units)
+      -> Fetches the current weather data using latitude and longitude.
+      -> Returns temperature, description, humidity, wind speed, sunrise/sunset etc.
+      -> Temperatures are rounded to integers for simplicity.
+  * get_forecast(lat, lon, api_key, units)
+      -> Fetches the 5-day forecast (every 3 hours).
+      -> Picks the "12:00:00" entry from each day (midday weather).
+      -> Returns forecast list with date, temp, description, and icon.
+  * main(city, state, country, units)
+      -> Wrapper function that calls the above functions.
+      -> Returns both current weather and forecast.
+
+- app.py
+  * Flask handles web requests.
+  * '/' route (index function)
+      -> GET request: loads empty page with search form.
+      -> POST request: gets city/state/country/units from form, calls get_weather, then returns results.
+      -> If invalid city or error, returns an error message.
+  * Finally renders index.html template with data, forecast, and error.
+
+---------------------------------------------------
+2. Frontend (HTML + Jinja2 + CSS)
+---------------------------------------------------
+
+File: index.html
+
+- Jinja2 Template Tags: {{ }} and {% %}
+  * {{ variable }} -> outputs data from Flask (like {{ data.temperature }}).
+  * {% if ... %} -> conditional rendering (only show card if data exists).
+  * {% for ... %} -> loop through forecast list and display forecast cards.
+
+- Layout:
+  * Bootstrap is used for styling (grid system, buttons, forms, cards).
+  * Container (centered), Row (horizontal grouping), Col (columns for responsive layout).
+
+- Search Form:
+  * Input fields for city, state, country.
+  * Radio buttons for Celsius/Fahrenheit selection (units).
+  * Button to submit form.
+
+- Error Alert:
+  * If error is passed from backend, it shows inside a Bootstrap alert box.
+
+- Current Weather Card:
+  * Shows main condition (Clear, Clouds, Rain, etc).
+  * Description of weather.
+  * Weather icon (from OpenWeatherMap icon URL).
+  * Temperature (integer, e.g., 28°).
+  * Feels like temperature.
+  * Extra details: humidity, wind speed, sunrise, sunset.
+
+- Forecast Cards:
+  * Displays 5-day forecast in smaller cards.
+  * Each card shows date, icon, temp, description.
+
+---------------------------------------------------
+3. CSS and Animations
+---------------------------------------------------
+
+- Backgrounds:
+  * The <body> tag has a class based on current weather (clear, clouds, rain, snow).
+  * Each class sets a different gradient background using CSS linear-gradient().
+  * Example: .clear -> yellow/orange gradient, .rain -> dark blue gradient.
+
+- Animations:
+  * fadeIn -> cards fade in when loaded.
+  * popIn -> weather icons smoothly pop in.
+  * bgMove -> background gradient slowly shifts left to right.
+
+- Glass Effect:
+  * Cards use "backdrop-filter: blur(6px)" to create frosted glass effect.
+
+---------------------------------------------------
+4. How Everything Works Together
+---------------------------------------------------
+
+1. User opens app -> Flask shows index.html (empty form).
+2. User enters a city and clicks "Find Weather".
+3. Flask gets city/state/country + units from form.
+4. weather.py fetches data from OpenWeatherMap (current + forecast).
+5. Data is passed to index.html template.
+6. Jinja2 inserts data into HTML (like {{ data.temperature }}).
+7. CSS applies styling + background theme based on weather.
+8. Bootstrap makes layout responsive and modern looking.
+9. User sees current weather + forecast + nice animations.
+
+---------------------------------------------------
+End of Guide
+---------------------------------------------------
